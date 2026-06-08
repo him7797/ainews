@@ -16,8 +16,8 @@
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Add onboarding dependencies to package.json (`expo-notifications`, `@react-native-async-storage/async-storage`, `react-native-reanimated`)
-- [ ] T002 [P] Configure `react-native-reanimated/plugin` in babel.config.js
+- [x] T001 Add onboarding dependencies to package.json (`expo-notifications`, `@react-native-async-storage/async-storage`, `react-native-reanimated`)
+- [x] T002 [P] Configure `react-native-reanimated/plugin` in babel.config.js
 
 ---
 
@@ -27,8 +27,8 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T003 Implement `AsyncStorage` wrapper in `src/lib/storage.ts`
-- [ ] T004 [P] Implement `expo-notifications` logic in `src/lib/notifications.ts`
+- [x] T003 Implement `AsyncStorage` wrapper in `src/lib/storage.ts`
+- [x] T004 [P] Implement `expo-notifications` logic in `src/lib/notifications.ts`
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -42,8 +42,8 @@
 
 ### Implementation for User Story 1
 
-- [ ] T005 [P] [US1] Create carousel component in `src/components/OnboardingCarousel.tsx`
-- [ ] T006 [US1] Create main onboarding screen in `src/app/onboarding/index.tsx` (uses `OnboardingCarousel`)
+- [x] T005 [P] [US1] Create carousel component in `src/components/OnboardingCarousel.tsx`
+- [x] T006 [US1] Create main onboarding screen in `src/app/onboarding/index.tsx` (uses `OnboardingCarousel`)
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
@@ -57,8 +57,8 @@
 
 ### Implementation for User Story 3
 
-- [ ] T007 [P] [US3] Create pill component in `src/components/TopicPill.tsx`
-- [ ] T008 [US3] Create topics screen in `src/app/onboarding/topics.tsx` using `TopicPill.tsx` and `storage.ts`
+- [x] T007 [P] [US3] Create pill component in `src/components/TopicPill.tsx`
+- [x] T008 [US3] Create topics screen in `src/app/onboarding/topics.tsx` using `TopicPill.tsx` and `storage.ts`
 
 **Checkpoint**: At this point, User Stories 1 AND 3 should both work independently
 
@@ -72,7 +72,7 @@
 
 ### Implementation for User Story 2
 
-- [ ] T009 [US2] Update slide 3 in `src/app/onboarding/index.tsx` to trigger notification prompt from `src/lib/notifications.ts`
+- [x] T009 [US2] Update slide 3 in `src/app/onboarding/index.tsx` to trigger notification prompt from `src/lib/notifications.ts`
 
 **Checkpoint**: All user stories should now be independently functional
 
@@ -82,8 +82,8 @@
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T010 [P] Update `src/app/_layout.tsx` to check `storage.ts` and conditionally skip onboarding.
-- [ ] T011 [P] Add unit tests for `src/lib/storage.ts` in `tests/unit/test_storage.ts`
+- [x] T010 [P] Update `src/app/_layout.tsx` to check `storage.ts` and conditionally skip onboarding.
+- [x] T011 [P] Add unit tests for `src/lib/storage.ts` in `tests/unit/test_storage.ts`
 
 ---
 
