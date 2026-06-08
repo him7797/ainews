@@ -1,9 +1,4 @@
-let AsyncStorage: any = null;
-try {
-  AsyncStorage = require('@react-native-async-storage/async-storage').default;
-} catch (e) {
-  // Ignore
-}
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ONBOARDING_COMPLETED_KEY = '@onboarding_completed';
 const SELECTED_TOPICS_KEY = '@selected_topics';
@@ -13,37 +8,29 @@ const memoryStore: Record<string, string> = {};
 
 export const getOnboardingCompleted = async (): Promise<boolean> => {
   try {
-    if (!AsyncStorage || !AsyncStorage.getItem) {
-      return memoryStore[ONBOARDING_COMPLETED_KEY] === 'true';
-    }
     const value = await AsyncStorage.getItem(ONBOARDING_COMPLETED_KEY);
     return value === 'true';
-  } catch (e) {
+  } catch (error) {
+    console.warn('Fallback to memory store for onboarding status due to:', error);
     return memoryStore[ONBOARDING_COMPLETED_KEY] === 'true';
   }
 };
 
 export const setOnboardingCompleted = async (completed: boolean): Promise<void> => {
   try {
-    if (!AsyncStorage || !AsyncStorage.setItem) {
-      memoryStore[ONBOARDING_COMPLETED_KEY] = completed.toString();
-      return;
-    }
     await AsyncStorage.setItem(ONBOARDING_COMPLETED_KEY, completed.toString());
-  } catch (e) {
+  } catch (error) {
+    console.warn('Fallback to memory store for onboarding status due to:', error);
     memoryStore[ONBOARDING_COMPLETED_KEY] = completed.toString();
   }
 };
 
 export const getSelectedTopics = async (): Promise<string[]> => {
   try {
-    if (!AsyncStorage || !AsyncStorage.getItem) {
-      const value = memoryStore[SELECTED_TOPICS_KEY];
-      return value ? JSON.parse(value) : [];
-    }
     const value = await AsyncStorage.getItem(SELECTED_TOPICS_KEY);
     return value ? JSON.parse(value) : [];
-  } catch (e) {
+  } catch (error) {
+    console.warn('Fallback to memory store for selected topics due to:', error);
     const value = memoryStore[SELECTED_TOPICS_KEY];
     return value ? JSON.parse(value) : [];
   }
@@ -51,12 +38,9 @@ export const getSelectedTopics = async (): Promise<string[]> => {
 
 export const setSelectedTopics = async (topics: string[]): Promise<void> => {
   try {
-    if (!AsyncStorage || !AsyncStorage.setItem) {
-      memoryStore[SELECTED_TOPICS_KEY] = JSON.stringify(topics);
-      return;
-    }
     await AsyncStorage.setItem(SELECTED_TOPICS_KEY, JSON.stringify(topics));
-  } catch (e) {
+  } catch (error) {
+    console.warn('Fallback to memory store for selected topics due to:', error);
     memoryStore[SELECTED_TOPICS_KEY] = JSON.stringify(topics);
   }
 };

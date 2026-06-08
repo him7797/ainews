@@ -1,18 +1,7 @@
 import { Platform, Alert, Linking } from 'react-native';
-
-let Notifications: any = null;
-try {
-  Notifications = require('expo-notifications');
-} catch (e) {
-  // Ignore
-}
+import * as Notifications from 'expo-notifications';
 
 export const requestNotificationPermissions = async (): Promise<boolean> => {
-  if (!Notifications) {
-    Alert.alert('Notifications', 'Push notifications are simulated in Expo Go.');
-    return true;
-  }
-
   try {
     if (Platform.OS === 'android') {
       await Notifications.setNotificationChannelAsync('default', {
@@ -45,12 +34,12 @@ export const requestNotificationPermissions = async (): Promise<boolean> => {
     
     return finalStatus === 'granted';
   } catch (error) {
+    console.warn('Push notifications are simulated in Expo Go.', error);
     return true; // proceed anyway in dev
   }
 };
 
 export const checkNotificationPermissions = async (): Promise<boolean> => {
-  if (!Notifications) return false;
   try {
     const { status } = await Notifications.getPermissionsAsync();
     return status === 'granted';
