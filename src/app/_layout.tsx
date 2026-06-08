@@ -1,15 +1,45 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
-import { useColorScheme } from 'react-native';
+import { Stack, router, useSegments } from "expo-router";
+import { useEffect, useState } from "react";
+import { getOnboardingCompleted } from "../lib/storage";
+import { View, ActivityIndicator } from "react-native";
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
+export default function RootLayout() {
+  const [isReady, setIsReady] = useState(false);
+  const segments = useSegments();
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  useEffect(() => {
+    const checkOnboarding = async () => {
+      try {
+        const completed = await getOnboardingCompleted();
+        const inOnboardingGroup = segments[0] === "onboarding";
+        
+        if (!completed && !inOnboardingGroup) {
+          router.replace("/onboarding");
+        } else if (completed && inOnboardingGroup) {
+          router.replace("/");
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setIsReady(true);
+      }
+    };
+    
+    checkOnboarding();
+  }, [segments]);
+
+  if (!isReady) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AnimatedSplashOverlay />
-      <AppTabs />
-    </ThemeProvider>
+    <Stack>
+      <Stack.Screen name="index" options={{ title: "Home" }} />
+      <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+    </Stack>
   );
 }
