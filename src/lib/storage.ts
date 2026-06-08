@@ -28,11 +28,11 @@ export const setOnboardingCompleted = async (completed: boolean): Promise<void> 
 export const getSelectedTopics = async (): Promise<string[]> => {
   try {
     const value = await AsyncStorage.getItem(SELECTED_TOPICS_KEY);
-    return value ? JSON.parse(value) : [];
+    return value ? (JSON.parse(value) as string[]) : [];
   } catch (error) {
     console.warn('Fallback to memory store for selected topics due to:', error);
     const value = memoryStore[SELECTED_TOPICS_KEY];
-    return value ? JSON.parse(value) : [];
+    return value ? (JSON.parse(value) as string[]) : [];
   }
 };
 
