@@ -65,6 +65,10 @@ Please review the proposed tech stack (Expo, AsyncStorage, Expo Notifications) a
 ### Screens / Routing
 Assuming `expo-router` is used:
 
+#### [MODIFY] src/app/_layout.tsx
+- Update the root layout to check `storage.ts` upon mount.
+- Conditionally redirect to `/onboarding` if `onboardingCompleted` is false, or keep the user in the main flow if true.
+
 #### [NEW] src/app/onboarding/index.tsx
 - The host screen for the `OnboardingCarousel`. 
 - Contains the 3 slides:
@@ -92,6 +96,7 @@ Assuming `expo-router` is used:
 ```text
 src/
 ├── app/
+│   ├── _layout.tsx
 │   ├── onboarding/
 │   │   ├── index.tsx
 │   │   └── topics.tsx
