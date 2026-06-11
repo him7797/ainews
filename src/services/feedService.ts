@@ -1,5 +1,5 @@
-const env = process.env as unknown as { EXPO_PUBLIC_API_BASE_URL?: string };
-const API_BASE_URL = env.EXPO_PUBLIC_API_BASE_URL ?? "http://localhost:3000";
+const API_BASE_URL =
+  process.env.EXPO_PUBLIC_API_BASE_URL ?? "http://localhost:3000";
 
 export type ArticleSource = {
   id: string;
