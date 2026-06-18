@@ -12,6 +12,11 @@ module.exports = defineConfig([
         tsconfigRootDir: __dirname,
       }
     },
+    settings: {
+      "import/resolver": {
+        node: { extensions: [".js", ".jsx", ".ts", ".tsx"], moduleDirectory: ["node_modules"] },
+      },
+    },
     rules: {
       "@typescript-eslint/no-explicit-any": "error",
       "@typescript-eslint/no-unsafe-assignment": "error",

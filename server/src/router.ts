@@ -1,6 +1,8 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { getCache, getRefreshStatus, awaitWarmCache } from "./cache.js";
+import { sql } from "./db.js";
+import { AuthError, encryptToken, signJwt, verifyGoogleIdToken } from "./auth.js";
 
 const app = new Hono();
 app.use("*", cors());
@@ -71,6 +73,58 @@ app.get("/articles", async (c) => {
       staleData: !lastRefreshOk,
     },
   });
+});
+
+app.post("/auth/google", async (c) => {
+  let body: { idToken?: string };
+  try {
+    body = await c.req.json();
+  } catch {
+    return c.json({ error: "invalid_request", message: "Request body must be JSON" }, 400);
+  }
+
+  if (!body.idToken) {
+    process.stdout.write(JSON.stringify({ event: "auth_failure", reason: "invalid_request", timestamp: new Date().toISOString() }) + "\n");
+    return c.json({ error: "invalid_request", message: "idToken is required" }, 400);
+  }
+
+  try {
+    const { email } = await verifyGoogleIdToken(body.idToken);
+    const encryptedToken = encryptToken(body.idToken);
+
+    const rows = await sql<{ id: string; email: string; created_at: Date; is_new: boolean }[]>`
+      INSERT INTO users (email, google_oauth_token)
+      VALUES (${email}, ${encryptedToken})
+      ON CONFLICT (email) DO UPDATE
+        SET google_oauth_token = EXCLUDED.google_oauth_token
+      RETURNING
+        id,
+        email,
+        created_at,
+        (xmax = 0) AS is_new
+    `;
+
+    const user = rows[0];
+    const isNewUser = user.is_new;
+    const token = await signJwt(user.id, user.email);
+
+    process.stdout.write(
+      JSON.stringify({ event: "auth_success", userId: user.id, isNewUser, timestamp: new Date().toISOString() }) + "\n"
+    );
+
+    const status = isNewUser ? 201 : 200;
+    return c.json(
+      { token, user: { id: user.id, email: user.email, createdAt: user.created_at }, isNewUser },
+      status
+    );
+  } catch (err) {
+    if (err instanceof AuthError) {
+      process.stdout.write(JSON.stringify({ event: "auth_failure", reason: err.code, timestamp: new Date().toISOString() }) + "\n");
+      return c.json({ error: err.code, message: err.message }, 401);
+    }
+    process.stdout.write(JSON.stringify({ event: "auth_failure", reason: "internal_error", timestamp: new Date().toISOString() }) + "\n");
+    return c.json({ error: "internal_error", message: "An unexpected error occurred" }, 500);
+  }
 });
 
 app.get("/health", (c) => {

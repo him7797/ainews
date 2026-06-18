@@ -9,6 +9,10 @@ export type Config = {
   cacheTtlSeconds: number;
   fetchTimeoutMs: number;
   feeds: FeedSource[];
+  databaseUrl: string;
+  jwtSecret: string;
+  tokenEncryptionKey: string;
+  googleClientId: string;
 };
 
 // Confirmed-working AI news RSS/Atom feeds (validated 2026-06-10).
@@ -44,5 +48,16 @@ export function loadConfig(): Config {
         .map((url: string): FeedSource => ({ url, enabled: true }))
     : DEFAULT_FEEDS;
 
-  return { port, cacheTtlSeconds, fetchTimeoutMs, feeds };
+  function requireEnv(name: string): string {
+    const val = process.env[name];
+    if (!val) throw new Error(`Missing required environment variable: ${name}`);
+    return val;
+  }
+
+  const databaseUrl = requireEnv("DATABASE_URL");
+  const jwtSecret = requireEnv("JWT_SECRET");
+  const tokenEncryptionKey = requireEnv("TOKEN_ENCRYPTION_KEY");
+  const googleClientId = requireEnv("GOOGLE_CLIENT_ID");
+
+  return { port, cacheTtlSeconds, fetchTimeoutMs, feeds, databaseUrl, jwtSecret, tokenEncryptionKey, googleClientId };
 }

@@ -1,6 +1,6 @@
 import { Stack, router, useSegments } from "expo-router";
 import { useEffect, useState } from "react";
-import { getOnboardingCompleted } from "../lib/storage";
+import { getJwt, getOnboardingCompleted } from "../lib/storage";
 import { View, ActivityIndicator } from "react-native";
 
 export default function RootLayout() {
@@ -8,14 +8,25 @@ export default function RootLayout() {
   const segments = useSegments();
 
   useEffect(() => {
-    const checkOnboarding = async () => {
+    const checkAuth = async () => {
       try {
-        const completed = await getOnboardingCompleted();
-        const inOnboardingGroup = segments[0] === "onboarding";
-        
-        if (!completed && !inOnboardingGroup) {
+        const [onboardingCompleted, jwt] = await Promise.all([
+          getOnboardingCompleted(),
+          getJwt(),
+        ]);
+
+        const segment = segments[0] as string | undefined;
+        const inOnboardingGroup = segment === "onboarding";
+        const inAuthGroup = segment === "auth";
+
+        if (!onboardingCompleted && !inOnboardingGroup) {
           router.replace("/onboarding");
-        } else if (completed && inOnboardingGroup) {
+        } else if (onboardingCompleted && inOnboardingGroup) {
+          router.replace("/");
+        } else if (onboardingCompleted && !jwt && !inAuthGroup) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          router.replace("/auth/sign-in" as any);
+        } else if (onboardingCompleted && jwt && inAuthGroup) {
           router.replace("/");
         }
       } catch (e) {
@@ -24,8 +35,8 @@ export default function RootLayout() {
         setIsReady(true);
       }
     };
-    
-    checkOnboarding();
+
+    checkAuth();
   }, [segments]);
 
   if (!isReady) {
@@ -40,6 +51,7 @@ export default function RootLayout() {
     <Stack>
       <Stack.Screen name="index" options={{ title: "Home" }} />
       <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+      <Stack.Screen name="auth/sign-in" options={{ headerShown: false }} />
     </Stack>
   );
 }
