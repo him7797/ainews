@@ -1,5 +1,16 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as SecureStore from 'expo-secure-store';
+import type * as SecureStoreType from 'expo-secure-store';
+
+// expo-secure-store requires a native build — unavailable in Expo Go
+function loadSecureStore(): typeof SecureStoreType | null {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    return require('expo-secure-store') as typeof SecureStoreType;
+  } catch {
+    return null;
+  }
+}
+const SecureStore = loadSecureStore();
 
 const ONBOARDING_COMPLETED_KEY = '@onboarding_completed';
 const SELECTED_TOPICS_KEY = '@selected_topics';
@@ -49,7 +60,11 @@ export const setSelectedTopics = async (topics: string[]): Promise<void> => {
 
 export const saveJwt = async (token: string): Promise<void> => {
   try {
-    await SecureStore.setItemAsync(JWT_KEY, token);
+    if (SecureStore) {
+      await SecureStore.setItemAsync(JWT_KEY, token);
+    } else {
+      await AsyncStorage.setItem(JWT_KEY, token);
+    }
   } catch {
     memoryStore[JWT_KEY] = token;
   }
@@ -57,7 +72,10 @@ export const saveJwt = async (token: string): Promise<void> => {
 
 export const getJwt = async (): Promise<string | null> => {
   try {
-    return await SecureStore.getItemAsync(JWT_KEY);
+    if (SecureStore) {
+      return await SecureStore.getItemAsync(JWT_KEY);
+    }
+    return await AsyncStorage.getItem(JWT_KEY);
   } catch {
     return memoryStore[JWT_KEY] ?? null;
   }
@@ -65,7 +83,11 @@ export const getJwt = async (): Promise<string | null> => {
 
 export const clearJwt = async (): Promise<void> => {
   try {
-    await SecureStore.deleteItemAsync(JWT_KEY);
+    if (SecureStore) {
+      await SecureStore.deleteItemAsync(JWT_KEY);
+    } else {
+      await AsyncStorage.removeItem(JWT_KEY);
+    }
   } catch {
     delete memoryStore[JWT_KEY];
   }
