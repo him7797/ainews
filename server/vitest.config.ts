@@ -5,6 +5,7 @@ export default defineConfig({
     pool: "forks",
     include: ["tests/**/*.test.ts"],
     environment: "node",
+    setupFiles: ["tests/setup.ts"],
   },
   resolve: {
     alias: {

@@ -8,7 +8,8 @@
     "scheme": "ainewsexpo",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/expo.icon",
+      "bundleIdentifier": "com.anonymous.ainewsexpo"
     },
     "android": {
       "adaptiveIcon": {
@@ -26,6 +27,7 @@
     },
     "plugins": [
       "expo-router",
+      "expo-web-browser",
       [
         "expo-splash-screen",
         {
@@ -35,7 +37,15 @@
             "imageWidth": 76
           }
         }
-      ]
+      ],
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.303215503562-0dpbkk7n8vj01eh7jbupukuijs1krf3u"
+        }
+      ],
+      "expo-image",
+      "./plugins/withModularHeaders"
     ],
     "experiments": {
       "typedRoutes": true,

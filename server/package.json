@@ -3,17 +3,20 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "node --env-file=.env --import tsx/esm --watch src/index.ts",
     "build": "tsc --project tsconfig.build.json",
     "start": "node dist/index.js",
     "test": "vitest run",
     "test:unit": "vitest run tests/unit",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "migrate": "psql $DATABASE_URL < migrations/001_create_users.sql"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.8",
     "hono": "^4.7.11",
     "html-entities": "^2.5.2",
+    "jose": "^6.2.3",
+    "postgres": "^3.4.9",
     "rss-parser": "^3.13.0",
     "striptags": "^3.2.0"
   },
