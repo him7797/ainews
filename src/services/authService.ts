@@ -1,10 +1,11 @@
 import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-signin";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { saveJwt } from "../lib/storage";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:3000";
 
 GoogleSignin.configure({
+  webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
   iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
   scopes: ["openid", "email"],
 });
@@ -23,13 +24,6 @@ type SignInResult = {
 export function useGoogleSignIn() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    GoogleSignin.configure({
-      iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
-      scopes: ["openid", "email"],
-    });
-  }, []);
 
   const signIn = useCallback(async (): Promise<SignInResult | null> => {
     setLoading(true);

@@ -9,7 +9,7 @@
     "test": "vitest run",
     "test:unit": "vitest run tests/unit",
     "test:watch": "vitest",
-    "migrate": "psql $DATABASE_URL < migrations/001_create_users.sql"
+    "migrate": "node --env-file=.env --import tsx/esm scripts/migrate.ts"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.8",

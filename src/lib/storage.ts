@@ -1,8 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 
 const ONBOARDING_COMPLETED_KEY = '@onboarding_completed';
 const SELECTED_TOPICS_KEY = '@selected_topics';
-const JWT_KEY = '@brief_jwt';
+const JWT_KEY = 'brief_jwt';
 
 // In-memory fallback for Expo Go
 const memoryStore: Record<string, string> = {};
@@ -48,7 +49,7 @@ export const setSelectedTopics = async (topics: string[]): Promise<void> => {
 
 export const saveJwt = async (token: string): Promise<void> => {
   try {
-    await AsyncStorage.setItem(JWT_KEY, token);
+    await SecureStore.setItemAsync(JWT_KEY, token);
   } catch {
     memoryStore[JWT_KEY] = token;
   }
@@ -56,7 +57,7 @@ export const saveJwt = async (token: string): Promise<void> => {
 
 export const getJwt = async (): Promise<string | null> => {
   try {
-    return await AsyncStorage.getItem(JWT_KEY);
+    return await SecureStore.getItemAsync(JWT_KEY);
   } catch {
     return memoryStore[JWT_KEY] ?? null;
   }
@@ -64,7 +65,7 @@ export const getJwt = async (): Promise<string | null> => {
 
 export const clearJwt = async (): Promise<void> => {
   try {
-    await AsyncStorage.removeItem(JWT_KEY);
+    await SecureStore.deleteItemAsync(JWT_KEY);
   } catch {
     delete memoryStore[JWT_KEY];
   }

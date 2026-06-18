@@ -1,5 +1,5 @@
 import { createCipheriv, createDecipheriv, randomBytes } from "crypto";
-import { SignJWT, jwtVerify } from "jose";
+import { SignJWT, createRemoteJWKSet, jwtVerify } from "jose";
 import { loadConfig } from "./config.js";
 
 const config = loadConfig();
@@ -32,6 +32,10 @@ export function decryptToken(stored: string): string {
 
 // ── Google ID token verification ─────────────────────────────────────────────
 
+const GOOGLE_JWKS = createRemoteJWKSet(
+  new URL("https://www.googleapis.com/oauth2/v3/certs")
+);
+
 export class AuthError extends Error {
   constructor(public readonly code: string, message: string) {
     super(message);
@@ -40,23 +44,22 @@ export class AuthError extends Error {
 }
 
 export async function verifyGoogleIdToken(idToken: string): Promise<{ email: string }> {
-  const res = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${idToken}`);
-
-  if (!res.ok) {
+  let payload: Record<string, unknown>;
+  try {
+    const result = await jwtVerify(idToken, GOOGLE_JWKS, {
+      issuer: ["https://accounts.google.com", "accounts.google.com"],
+      audience: config.googleClientId,
+    });
+    payload = result.payload as Record<string, unknown>;
+  } catch {
     throw new AuthError("invalid_id_token", "Google ID token verification failed");
   }
 
-  const claims = (await res.json()) as Record<string, string>;
-
-  if (claims.aud !== config.googleClientId) {
-    throw new AuthError("invalid_id_token", "Google ID token audience mismatch");
-  }
-
-  if (claims.email_verified !== "true") {
+  if (payload.email_verified !== true) {
     throw new AuthError("email_not_verified", "Google account email must be verified");
   }
 
-  return { email: claims.email };
+  return { email: payload.email as string };
 }
 
 // ── JWT sign / verify ────────────────────────────────────────────────────────

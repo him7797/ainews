@@ -19,14 +19,16 @@ export default function SignInScreen() {
       <Text style={styles.title}>Brief</Text>
       <Text style={styles.subtitle}>AI news, curated for you.</Text>
 
-      {loading ? (
-        <ActivityIndicator size="large" style={styles.spinner} />
-      ) : (
-        <TouchableOpacity style={styles.button} onPress={handleSignIn} disabled={loading}>
-          <AntDesign name="google" size={20} color="#fff" style={styles.icon} />
-          <Text style={styles.buttonText}>Sign in with Google</Text>
-        </TouchableOpacity>
-      )}
+      <TouchableOpacity style={styles.button} onPress={handleSignIn} disabled={loading}>
+        {loading ? (
+          <ActivityIndicator size="small" color="#fff" />
+        ) : (
+          <>
+            <AntDesign name="google" size={20} color="#fff" style={styles.icon} />
+            <Text style={styles.buttonText}>Sign in with Google</Text>
+          </>
+        )}
+      </TouchableOpacity>
 
       {error ? <Text style={styles.error}>{error}</Text> : null}
     </View>
@@ -67,9 +69,6 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "600",
-  },
-  spinner: {
-    marginVertical: 20,
   },
   error: {
     marginTop: 20,
